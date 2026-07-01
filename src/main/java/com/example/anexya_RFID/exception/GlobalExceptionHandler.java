@@ -23,8 +23,5 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<List<String>> handleDuplicateKey(DataIntegrityViolationException ex) {
-        return new ResponseEntity<>(List.of("epc: EPC already exists"), HttpStatus.CONFLICT);
-    }
+   
 }

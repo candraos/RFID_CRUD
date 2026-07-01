@@ -3,6 +3,7 @@ package com.example.anexya_RFID.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,17 @@ public class RFIDTagService {
     }
 
     public RFIDTag create(RFIDTag rfidTag) {
+        if (rfidTagRepository.existsByEpc(rfidTag.getEpc())) {
+            throw new DataIntegrityViolationException("EPC already exists");
+        }
         return rfidTagRepository.save(rfidTag);
     }
 
     public RFIDTag updateByTid(UUID tid, RFIDTag updated) throws NotFoundException {
         RFIDTag existing = rfidTagRepository.findById(tid).orElseThrow(NotFoundException::new);
+        if (!existing.getEpc().equals(updated.getEpc()) && rfidTagRepository.existsByEpcAndTIDNot(updated.getEpc(), tid)) {
+            throw new DataIntegrityViolationException("EPC already exists");
+        }
         RFIDTag updatedTag = RFIDTag.builder()
                 .TID(existing.getTID())
                 .siteName(updated.getSiteName())

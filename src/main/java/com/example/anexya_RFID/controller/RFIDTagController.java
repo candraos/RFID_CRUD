@@ -1,7 +1,9 @@
 package com.example.anexya_RFID.controller;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,16 +36,22 @@ public class RFIDTagController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<RFIDTag> createRFID(@Valid @RequestBody RfidDto rfidDto) {
-        RFIDTag entity = rfidTagService.create(rfidTagMapper.toEntity(rfidDto));
-        return new ResponseEntity<>(entity, HttpStatus.CREATED);
+    public ResponseEntity<?> createRFID(@Valid @RequestBody RfidDto rfidDto) {
+        try {
+            RFIDTag entity = rfidTagService.create(rfidTagMapper.toEntity(rfidDto));
+            return new ResponseEntity<>(entity, HttpStatus.CREATED);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(List.of("epc: " + e.getMessage()), HttpStatus.CONFLICT);
+        }
     }
 
     @PutMapping("/update/{tid}")
-    public ResponseEntity<RFIDTag> updateByTid(@PathVariable UUID tid, @Valid @RequestBody RfidDto rfidDto) throws Exception {
+    public ResponseEntity<?> updateByTid(@PathVariable UUID tid, @Valid @RequestBody RfidDto rfidDto) {
         try {
             RFIDTag updatedEntity = rfidTagService.updateByTid(tid, rfidTagMapper.toEntity(rfidDto));
             return new ResponseEntity<>(updatedEntity, HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(List.of("epc: " + e.getMessage()), HttpStatus.CONFLICT);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

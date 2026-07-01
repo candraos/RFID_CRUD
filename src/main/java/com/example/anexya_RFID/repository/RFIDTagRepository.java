@@ -10,4 +10,7 @@ import com.example.anexya_RFID.model.RFIDTag;
 @Repository
 public interface RFIDTagRepository extends JpaRepository<RFIDTag, UUID> {
 
+    boolean existsByEpc(String epc);
+
+    boolean existsByEpcAndTIDNot(String epc, UUID tid);
 }
