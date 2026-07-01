@@ -23,5 +23,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-   
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<List<String>> handleError(DataIntegrityViolationException ex) {
+        return new ResponseEntity<>(List.of("Error occured, please try again later"), HttpStatus.CONFLICT);
+    }
 }
