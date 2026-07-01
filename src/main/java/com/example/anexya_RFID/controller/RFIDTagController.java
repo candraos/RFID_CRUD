@@ -12,6 +12,7 @@ import com.example.anexya_RFID.mapper.RFIDTagMapper;
 import com.example.anexya_RFID.model.RFIDTag;
 import com.example.anexya_RFID.service.RFIDTagService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,25 +34,18 @@ public class RFIDTagController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<RFIDTag> createRFID(@RequestBody RfidDto rfidDto) {
-        try {
-            RFIDTag entity = rfidTagService.create(rfidTagMapper.toEntity(rfidDto));
-            return new ResponseEntity<>(entity, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<RFIDTag> createRFID(@Valid @RequestBody RfidDto rfidDto) {
+        RFIDTag entity = rfidTagService.create(rfidTagMapper.toEntity(rfidDto));
+        return new ResponseEntity<>(entity, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{tid}")
-    public ResponseEntity<RFIDTag> updateByTid(@PathVariable UUID tid, @RequestBody RfidDto rfidDto) {
-        try{
-            
+    public ResponseEntity<RFIDTag> updateByTid(@PathVariable UUID tid, @Valid @RequestBody RfidDto rfidDto) throws Exception {
+        try {
             RFIDTag updatedEntity = rfidTagService.updateByTid(tid, rfidTagMapper.toEntity(rfidDto));
             return new ResponseEntity<>(updatedEntity, HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

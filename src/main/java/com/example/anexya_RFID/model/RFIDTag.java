@@ -38,6 +38,7 @@ public class RFIDTag {
     
     @NotBlank(message = "EPC is required")
     @NotNull(message = "EPC is required")
+    @Column(unique = true)
     private String epc;
 
     @NotBlank(message = "Location is required")
