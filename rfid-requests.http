@@ -1,0 +1,30 @@
+### Get RFID tag by TID
+GET http://localhost:8080/rfidtagcontroller/get/{{tid}}
+Content-Type: application/json
+
+### Create RFID tag
+POST http://localhost:8080/rfidtagcontroller/create
+Content-Type: application/json
+
+{
+  "tid": "{{tid}}",
+  "siteName": "Site A",
+  "epc": "E200001234567890",
+  "location": "Warehouse 1",
+  "rssi": 75
+}
+
+### Update RFID tag by TID
+PUT http://localhost:8080/rfidtagcontroller/update/{{tid}}
+Content-Type: application/json
+
+{
+  "tid": "{{tid}}",
+  "siteName": "Site B",
+  "epc": "E200001234567891",
+  "location": "Warehouse 2",
+  "rssi": 80
+}
+
+### Delete RFID tag by TID
+DELETE http://localhost:8080/rfidtagcontroller/delete/{{tid}}
