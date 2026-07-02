@@ -43,7 +43,7 @@ public class RFIDTagServiceTest {
     public void setUp() {
         // Initialize mocks and any required setup here
         rfidTag = new RFIDTag();
-        rfidTag.setTID(java.util.UUID.randomUUID());
+        rfidTag.setTID(UUID.randomUUID());
         rfidTag.setDate(LocalDateTime.now());
         rfidTag.setEpc("EPC123");
         rfidTag.setLocation("Location1");
@@ -64,12 +64,12 @@ public class RFIDTagServiceTest {
 
     @Test
     public void testGetRFIDTagById() {
-        when(rfidTagRepository.findById(any())).thenReturn(java.util.Optional.of(rfidTag));
+        when(rfidTagRepository.findById(any())).thenReturn(Optional.of(rfidTag));
 
         RFIDTag foundTag = rfidService.findByTid(rfidTag.getTID()).get();
 
         assertNotNull(foundTag);
-        assertNotNull(foundTag.getTID());
+        assertEquals(foundTag.getTID(),rfidTag.getTID());
     }
 
     @Test
