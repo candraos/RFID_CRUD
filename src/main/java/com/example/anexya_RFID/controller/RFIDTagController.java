@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/rfidtagcontroller")
+@RequestMapping("/rfidtag")
 @RequiredArgsConstructor
 public class RFIDTagController {
 
