@@ -1,0 +1,69 @@
+# This file describes and starts TWO containers together:
+#   1) "db"  - a MySQL database
+#   2) "app" - our Spring Boot application
+# Running "docker compose up" starts both and connects them to each other
+# automatically, using the settings below.
+
+services:
+
+  # ---------- The MySQL database container ----------
+  db:
+    # Use the official MySQL image, version 8.4 (a fixed version, so it
+    # never changes unexpectedly under us).
+    image: mysql:8.4
+
+    # If this container ever crashes, or the computer restarts, Docker
+    # will automatically start it again on its own.
+    restart: unless-stopped
+
+    # These are environment variables that the MySQL image reads the
+    # very FIRST time it starts. MYSQL_DATABASE makes it auto-create our
+    # database. Our .env file's DB_USERNAME happens to be "root", which is
+    # MySQL's built-in superuser - so we only set its password
+    # (MYSQL_ROOT_PASSWORD) instead of trying to create a new user named
+    # "root" (MySQL refuses that, since root already exists by default).
+    environment:
+      MYSQL_DATABASE: anexyadb
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+
+    # This stores MySQL's actual data files in a Docker "volume" named
+    # mysql_data, instead of inside the container itself. That way, our
+    # data survives even if we remove and recreate the container.
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # ---------- Our Spring Boot application container ----------
+  app:
+    # Build this container using the Dockerfile in this same folder.
+    build: .
+
+    # Start the "db" service before starting this one.
+    depends_on:
+      - db
+
+    # Automatically restart if it crashes. This matters here because the
+    # app might try to connect to MySQL before MySQL has fully finished
+    # starting up the very first time - if that happens, the app will
+    # crash once, and this setting makes Docker simply start it again,
+    # by which point MySQL is usually ready.
+    restart: unless-stopped
+
+    # These environment variables override the database settings that
+    # are written inside application.properties, so that instead of
+    # trying to connect to "localhost" (which doesn't work inside a
+    # container), the app connects to "db" - the name Docker gives the
+    # MySQL container on their shared private network.
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/anexyadb
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+    # Make port 8080 inside the container reachable as port 8080 on our
+    # own computer, so we can open http://localhost:8080 in a browser.
+    ports:
+      - "8080:8080"
+
+# This declares the named volume used by the "db" service above, so
+# Docker knows to create and manage it.
+volumes:
+  mysql_data:
