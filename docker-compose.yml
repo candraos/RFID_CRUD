@@ -17,14 +17,20 @@ services:
     restart: unless-stopped
 
     # These are environment variables that the MySQL image reads the
-    # very FIRST time it starts. MYSQL_DATABASE makes it auto-create our
-    # database. Our .env file's DB_USERNAME happens to be "root", which is
-    # MySQL's built-in superuser - so we only set its password
-    # (MYSQL_ROOT_PASSWORD) instead of trying to create a new user named
-    # "root" (MySQL refuses that, since root already exists by default).
+    # very FIRST time it starts. MYSQL_DATABASE auto-creates our database.
+    # MYSQL_USER/MYSQL_PASSWORD auto-create the only real account our app
+    # uses, read straight from our .env file (DB_USERNAME/DB_PASSWORD) - so
+    # changing .env is all it takes to change who the app logs in as.
+    # MYSQL_ALLOW_EMPTY_PASSWORD leaves the separate built-in "root"
+    # superuser account with no password at all, since our app never logs
+    # in as root and we don't want a second password value to manage.
+    # Fine for a local/dev-only database; never do this on anything
+    # reachable from outside your own machine.
     environment:
       MYSQL_DATABASE: anexyadb
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
     # This stores MySQL's actual data files in a Docker "volume" named
     # mysql_data, instead of inside the container itself. That way, our
